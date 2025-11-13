@@ -146,17 +146,22 @@
 
   <h3>All Polls</h3>
 
-  <!-- Search bar for filtering polls -->
-  <input 
-    class="center-input" 
-    type="text" 
-    id="searchPoll" 
-    placeholder="Search polls by question..." 
-    onkeyup="searchPolls()" 
-  />
+  <!--  ADDED SEARCH BAR -->
+  <input class="center-input" type="text" id="searchInput" placeholder="Search poll by question...">
+  <button onclick="searchPoll()">Search</button>
 
   <div id="pollList"></div>
 
+  <!--  Logout button moved below everything -->
+  <button onclick="logout()">Logout</button>
+</section>
+
+   <!-- STUDENT PAGE -->
+<section id="studentPage" style="display:none;">
+  <h2>Available Polls</h2>
+  <div id="studentPolls"></div>
+
+  <!--  Logout button moved below polls -->
   <button onclick="logout()">Logout</button>
 </section>
 
@@ -325,34 +330,6 @@
     loadPolls();
   }
 
-  // Search polls by question (Admin)
-function searchPolls() {
-  const query = document.getElementById("searchPoll").value.toLowerCase();
-  const list = document.getElementById("pollList");
-  list.innerHTML = "";
-
-  const filtered = polls.filter(p => p.question.toLowerCase().includes(query));
-
-  if (filtered.length === 0) {
-    list.innerHTML = "<p>No matching polls found.</p>";
-    return;
-  }
-
-  filtered.forEach((p, i) => {
-    const d = document.createElement("div");
-    d.className = "poll-item";
-    // We need the correct index from 'polls' array
-    const realIndex = polls.indexOf(p);
-    d.innerHTML = `
-      <strong>${p.question}</strong><br>
-      <button onclick="viewResults(${realIndex})">View Results</button>
-      <button onclick="editPoll(${realIndex})">Edit</button>
-      <button onclick="deletePoll(${realIndex})">Delete</button>
-    `;
-    list.appendChild(d);
-  });
-}
-
   function deletePoll(i) {
     if (!confirm("Delete this poll?")) return;
     polls.splice(i, 1);
@@ -424,7 +401,7 @@ function searchPolls() {
     poll.options[selectedOption].votes++;
     poll.voters.push(currentUser);
     localStorage.setItem("polls", JSON.stringify(polls));
-    document.getElementById("voteMessage").textContent = " Vote Successful!";
+    document.getElementById("voteMessage").textContent = "✅ Vote Successful!";
   }
 
   // View results (admin)
@@ -452,6 +429,33 @@ function searchPolls() {
     document.getElementById("adminPage").style.display = "block";
     loadPolls();
   }
+
+  //  Search poll by question (admin)
+function searchPoll() {
+  const query = document.getElementById("searchInput").value.toLowerCase();
+  const list = document.getElementById("pollList");
+  list.innerHTML = "";
+
+  const filteredPolls = polls.filter(p => p.question.toLowerCase().includes(query));
+
+  if (filteredPolls.length === 0) {
+    list.innerHTML = "<p>No matching polls found.</p>";
+    return;
+  }
+
+  filteredPolls.forEach((p, i) => {
+    const d = document.createElement("div");
+    d.className = "poll-item";
+    d.innerHTML = `
+      <strong>${p.question}</strong><br>
+      <button onclick="viewResults(${polls.indexOf(p)})">View Results</button>
+      <button onclick="editPoll(${polls.indexOf(p)})">Edit</button>
+      <button onclick="deletePoll(${polls.indexOf(p)})">Delete</button>
+    `;
+    list.appendChild(d);
+  });
+}
+
 </script>
 
 </body>
