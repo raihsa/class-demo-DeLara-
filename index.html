@@ -135,7 +135,7 @@
       <p><span class="link" onclick="backToStudent()">Back to Student Login</span></p>
     </section>
 
-    <!-- ADMIN PAGE -->
+   <!-- ADMIN PAGE -->
 <section id="adminPage" style="display:none;">
   <h2>Admin Panel</h2>
 
@@ -145,18 +145,18 @@
   <button class="submit-btn" onclick="createPoll()">Create Poll</button>
 
   <h3>All Polls</h3>
+
+  <!-- ✅ Search bar for filtering polls -->
+  <input 
+    class="center-input" 
+    type="text" 
+    id="searchPoll" 
+    placeholder="Search polls by question..." 
+    onkeyup="searchPolls()" 
+  />
+
   <div id="pollList"></div>
 
-  <!-- ✅ Logout button moved below everything -->
-  <button onclick="logout()">Logout</button>
-</section>
-
-   <!-- STUDENT PAGE -->
-<section id="studentPage" style="display:none;">
-  <h2>Available Polls</h2>
-  <div id="studentPolls"></div>
-
-  <!-- ✅ Logout button moved below polls -->
   <button onclick="logout()">Logout</button>
 </section>
 
@@ -324,6 +324,34 @@
     alert("Poll updated successfully!");
     loadPolls();
   }
+
+  // Search polls by question (Admin)
+function searchPolls() {
+  const query = document.getElementById("searchPoll").value.toLowerCase();
+  const list = document.getElementById("pollList");
+  list.innerHTML = "";
+
+  const filtered = polls.filter(p => p.question.toLowerCase().includes(query));
+
+  if (filtered.length === 0) {
+    list.innerHTML = "<p>No matching polls found.</p>";
+    return;
+  }
+
+  filtered.forEach((p, i) => {
+    const d = document.createElement("div");
+    d.className = "poll-item";
+    // We need the correct index from 'polls' array
+    const realIndex = polls.indexOf(p);
+    d.innerHTML = `
+      <strong>${p.question}</strong><br>
+      <button onclick="viewResults(${realIndex})">View Results</button>
+      <button onclick="editPoll(${realIndex})">Edit</button>
+      <button onclick="deletePoll(${realIndex})">Delete</button>
+    `;
+    list.appendChild(d);
+  });
+}
 
   function deletePoll(i) {
     if (!confirm("Delete this poll?")) return;
